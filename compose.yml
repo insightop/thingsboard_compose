@@ -1,5 +1,7 @@
+name: thingsboard
+
 services:
-  thingsboard:
+  tb-postgres:
     restart: always
     image: "thingsboard/tb-postgres"
     ports:
