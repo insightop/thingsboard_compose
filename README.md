@@ -10,6 +10,13 @@ Thingsboard 的 docker-compose 部署
 mkdir -p volumes/data && sudo chown -R 799:799 volumes/data
 mkdir -p volumes/logs && sudo chown -R 799:799 volumes/logs
 ```
+
+## 启动
+
+```
+sudo docker compose up -d
+```
+
 ## 端口
 
 - 8080： Web管理入口
