@@ -7,20 +7,25 @@ Thingsboard 的 docker-compose 部署
 ## 初始化
 
 ```bash
+# 创建目录
 mkdir -p volumes/data && sudo chown -R 799:799 volumes/data
 mkdir -p volumes/logs && sudo chown -R 799:799 volumes/logs
+
+# 首次启动
+docker compose run --rm -e INSTALL_TB=true -e LOAD_DEMO=true thingsboard-ce
 ```
 
 ## 启动
 
-```
+```bash
 sudo docker compose up -d
 ```
 
 ## 端口
 
-- 8080： Web管理入口
+- 8080: Web管理入口
 - 1883: MQTT
+- 8883: MQTT over TLS
 - 5683-5688: UDP
 - 7070: Edge RPC
 
