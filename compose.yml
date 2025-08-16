@@ -1,5 +1,3 @@
-name: thingsboard
-
 services:
   postgres:
     container_name: postgres
@@ -17,7 +15,7 @@ services:
   thingsboard-ce:
     container_name: thingsboard-ce
     restart: always
-    image: "thingsboard/tb-node:4.1.0"
+    image: "thingsboard/tb-node:4.2.0"
     ports:
       - "8080:8080"
       - "7070:7070"
