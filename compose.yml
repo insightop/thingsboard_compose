@@ -1,41 +1,58 @@
 services:
-  postgres:
-    container_name: postgres
-    restart: always
-    image: "postgres:16"
-    ports:
-      - "5432"
-    environment:
-      POSTGRES_DB: thingsboard
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      # - postgres-data:/var/lib/postgresql/data
-      - ./volumes/data/db:/var/lib/postgresql/data
-      
-  thingsboard-ce:
-    container_name: thingsboard-ce
-    restart: always
-    image: "thingsboard/tb-node:4.2.0"
-    ports:
-      - "8080:8080"
-      - "7070:7070"
-      - "1883:1883"
-      - "8883:8883"
-      - "5683-5688:5683-5688/udp"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "10"
-    environment:
-      TB_SERVICE_ID: tb-ce-node
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
-    volumes:
-      - ./volumes/logs:/var/log/thingsboard
-    depends_on:
-      - postgres
+    postgres:
+        container_name: postgres
+        restart: always
+        image: "postgres:16"
+        ports:
+            - "5432"
+        environment:
+            POSTGRES_DB: thingsboard
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - thingsboard-postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d thingsboard"]
+            start_period: 30s
+            interval: 20s
+            timeout: 5s
+            retries: 3
 
-# volumes:
-#   postgres-data:
-#     name: tb-postgres-data
-#     driver: local
+    thingsboard-ce:
+        container_name: thingsboard-ce
+        restart: always
+        image: "thingsboard/tb-node:4.2.0"
+        ports:
+            - "8080:8080" # http
+            - "8443:443" # https
+            - "7070:7070" # rpc
+            - "1883:1883" # mqtt
+            - "8883:8883" # mqtts
+            - "5683-5688:5683-5688/udp" # coap
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "100m"
+                max-file: "10"
+        environment:
+            TB_SERVICE_ID: tb-ce-node
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
+        volumes:
+            - thingsboard-data:/data
+            - thingsboard-logs:/var/log/thingsboard
+        depends_on:
+            postgres:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD-SHELL", "ps aux | grep -q '[j]ava' || exit 1"]
+            start_period: 60s
+            interval: 30s
+            timeout: 10s
+            retries: 3
+
+volumes:
+    thingsboard-data:
+        name: thingsboard-data
+    thingsboard-logs:
+        name: thingsboard-logs
+    thingsboard-postgres-data:
+        name: thingsboard-postgres-data
