@@ -36,6 +36,7 @@ services:
         environment:
             TB_SERVICE_ID: tb-ce-node
             SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
+            HTTP_MAX_PAYLOAD_SIZE_LIMIT_CONFIGURATION: /api/image*/**=52428800;/api/resource/**=52428800;/api/**=52428800
         volumes:
             - thingsboard-data:/data
             - thingsboard-logs:/var/log/thingsboard
